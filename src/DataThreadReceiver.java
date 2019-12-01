@@ -8,10 +8,10 @@ import java.net.Socket;
 public class DataThreadReceiver implements Runnable {
 
 	private final Socket socket;
-	private final String directory;
+	private final String path;
 	
 	public DataThreadReceiver(Socket socket, String directory) {
-		this.directory = directory;
+		this.path = directory;
 		this.socket = socket;
 	}
 	
@@ -20,7 +20,7 @@ public class DataThreadReceiver implements Runnable {
 	
 		try {
 			
-			receiveFileFromClient(directory,socket);
+			receiveFileFromClient(socket, path);
 			
 		} catch(FileNotFoundException e1 ) {
 			e1.printStackTrace();
@@ -30,7 +30,7 @@ public class DataThreadReceiver implements Runnable {
 		
 	}
 	
-	public static void receiveFileFromClient(String path, Socket socket) throws FileNotFoundException, IOException {
+	public static void receiveFileFromClient(Socket socket, String path) throws FileNotFoundException, IOException {
 		
 		InputStream in = socket.getInputStream();
 		

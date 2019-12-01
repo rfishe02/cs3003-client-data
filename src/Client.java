@@ -1,7 +1,10 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ public class Client {
 			int port = 32100;
 
 			sendFilesToNodes(fileIndex,nodes,port,"LabFolders/");
+			getFilesFromNodes(fileIndex,nodes,port,"test1.txt");
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -77,7 +81,7 @@ public class Client {
 				fileIndex.put(dir[i].getName(),place);
 			
 				socket = new Socket(nodes.get(place), port);
-				socket.shutdownInput(); // Data understands we've enabled output.
+				socket.shutdownInput(); // Data will see we've enabled output only.
 				
 				Thread t = new Thread(new ClientThreadSender(socket,dir[i]));
 				t.start();
@@ -87,9 +91,34 @@ public class Client {
 		
 	}
 	
-	public static void getFilesFromNodes() {
+	public static void getFilesFromNodes(
+		HashMap<String, Integer> fileIndex, 
+		ArrayList<String> nodes, 
+		int port,
+		String filename
+	) throws FileNotFoundException, IOException {
 		
+		Socket socket = new Socket(nodes.get(fileIndex.get(filename)), port);
 		
+		OutputStream out = socket.getOutputStream();
+		out.write(filename.getBytes().length); // Write how long the filename is in bytes.
+		out.write(filename.getBytes()); // Write the bytes.
+	
+		InputStream in = socket.getInputStream();
+		StringBuilder sb = new StringBuilder();	
+		byte[] data = new byte[ 2048 ];
+		
+		int bytesRead = in.read(data, 0, data.length); // Read bytes from the stream.
+		while( bytesRead != -1 ) {
+			sb.append(new String(data));
+			bytesRead = in.read(data, 0, data.length);
+        } // While there are more more bytes to read.
+
+        System.out.println(sb.toString());
+        
+        out.close();
+        in.close();
+        socket.close();
 		
 	}
 	

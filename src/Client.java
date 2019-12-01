@@ -48,7 +48,7 @@ public class Client {
 		String[] spl;
 		String read;
 		
-		while((read = br.readLine())!=null) {
+		while( (read = br.readLine()) != null ) {
 			
 			spl = read.split(" ");
 			res.add(spl[1]);
@@ -68,16 +68,19 @@ public class Client {
 	) throws UnknownHostException, IOException {
 		
 		File[] dir = new File(directory).listFiles();
+		Socket socket;
+		OutputStream out;
+		int place;
 		
-		if(dir != null) {
+		if( dir != null ) {
 			
 			for(int i = 0; i < dir.length; i++) {
 				
-				int place = getHashValue(dir[i].getName(),nodes.size(),1);
+				place = getHashValue(dir[i].getName(),nodes.size(),1);
 				fileIndex.put(dir[i].getName(),place);
 			
-				Socket socket = new Socket(nodes.get(place), port);
-				OutputStream out = socket.getOutputStream();
+				socket = new Socket(nodes.get(place), port);
+				out = socket.getOutputStream();
 					
 				sendFile(dir[i], out);
 				
@@ -91,7 +94,7 @@ public class Client {
 	
 	public static void sendFile(File file, OutputStream out) throws FileNotFoundException, IOException {
 		
-		BufferedInputStream bis =  new BufferedInputStream(new FileInputStream(new File(file.getPath())));
+		BufferedInputStream bis = new BufferedInputStream( new FileInputStream( new File(file.getPath()) ) );
 		
 		out.write(file.getName().getBytes().length); // Write how long the filename is in bytes.
 		out.write(file.getName().getBytes()); // Write the bytes.
@@ -99,7 +102,7 @@ public class Client {
 		byte[] data = new byte[ 2048 ];
 		
 		int bytesRead = bis.read(data, 0, data.length); // Read bytes from the file.
-		while(bytesRead != -1) {
+		while( bytesRead != -1 ) {
 			out.write(data, 0 , data.length);
 			bytesRead = bis.read(data, 0, data.length);
 		} // While there are more bytes to send.
@@ -107,5 +110,5 @@ public class Client {
 		bis.close();
 		
 	}
-
+	
 }

@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.UUID;
 
 public class Data {
 
 	public static void main(String[] args) {
+		
+		Socket socket;
+		InputStream in;
 		
 		try {
 			
@@ -19,8 +21,8 @@ public class Data {
 			
 			while(true) {
 		
-				Socket socket = server.accept();
-				InputStream in = socket.getInputStream();
+				socket = server.accept();
+				in = socket.getInputStream();
 				
 				readFile("Lab_Output",in);
 				
@@ -53,8 +55,8 @@ public class Data {
 		byte[] data = new byte[ 2048 ];
 		
 		int bytesRead = in.read(data, 0, data.length); // Read bytes from the stream.
-		while(bytesRead != -1) {
-        	bos.write( data, 0, data.length );
+		while( bytesRead != -1 ) {
+			bos.write( data, 0, data.length );
         	bytesRead = in.read(data, 0, data.length);
         } // While there are more more bytes to read.
 

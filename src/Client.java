@@ -1,11 +1,7 @@
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -22,14 +18,14 @@ public class Client {
 			ArrayList<String> nodes = readConfig("config.txt");
 			int port = 32100;
 
-			processDirectoryOfFiles(fileIndex,nodes,port,"LabFolders/");
+			sendFilesToNodes(fileIndex,nodes,port,"LabFolders/");
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 	}
-	
+
 	public static ArrayList<String> readConfig(String filename) throws IOException {
 		
 		ArrayList<String> res = new ArrayList<>(15);
@@ -61,31 +57,7 @@ public class Client {
 			
 	}
 	
-	public static void processSingleFile(
-		HashMap<String, Integer> fileIndex, 
-		ArrayList<String> nodes, 
-		int port, 
-		File file
-	) throws FileNotFoundException, IOException {
-		
-		Socket socket;
-		OutputStream out;
-		int place;
-		
-		place = getHashValue(file.getName(),nodes.size(),1);
-		fileIndex.put(file.getName(),place);
-	
-		socket = new Socket(nodes.get(place), port);
-		out = socket.getOutputStream();
-		
-		sendFile(file, out);
-		
-		out.close();
-		socket.close();
-		
-	}
-	
-	public static void processDirectoryOfFiles(
+	public static void sendFilesToNodes(
 		HashMap<String, Integer> fileIndex, 
 		ArrayList<String> nodes, 
 		int port, 
@@ -94,7 +66,7 @@ public class Client {
 		
 		File[] dir = new File(directory).listFiles();
 		Socket socket;
-		OutputStream out;
+		
 		int place;
 		
 		if( dir != null ) {
@@ -105,34 +77,19 @@ public class Client {
 				fileIndex.put(dir[i].getName(),place);
 			
 				socket = new Socket(nodes.get(place), port);
-				out = socket.getOutputStream();
-					
-				sendFile(dir[i], out);
+				socket.shutdownInput(); // Data understands we've enabled output.
 				
-				out.close();
-				socket.close();
+				Thread t = new Thread(new ClientThreadSender(socket,dir[i]));
+				t.start();
 				
-			}
+			} // For each file, send it using a new Socket connection to a particular Data node.
 		}
 		
 	}
 	
-	public static void sendFile(File file, OutputStream out) throws FileNotFoundException, IOException {
+	public static void getFilesFromNodes() {
 		
-		BufferedInputStream bis = new BufferedInputStream( new FileInputStream( new File(file.getPath()) ) );
 		
-		out.write(file.getName().getBytes().length); // Write how long the filename is in bytes.
-		out.write(file.getName().getBytes()); // Write the bytes.
-		
-		byte[] data = new byte[ 2048 ];
-		
-		int bytesRead = bis.read(data, 0, data.length); // Read bytes from the file.
-		while( bytesRead != -1 ) {
-			out.write(data, 0 , data.length);
-			bytesRead = bis.read(data, 0, data.length);
-		} // While there are more bytes to send.
-
-		bis.close();
 		
 	}
 	

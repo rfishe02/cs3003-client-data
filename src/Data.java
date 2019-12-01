@@ -1,19 +1,12 @@
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Data {
 
 	public static void main(String[] args) {
-		
-		Socket socket;
-		InputStream in;
-		
+	
 		try {
 			
 			ServerSocket server = new ServerSocket(32100);
@@ -21,19 +14,24 @@ public class Data {
 			
 			while(true) {
 				
-				socket = server.accept();
-				in = socket.getInputStream();
+				Socket socket = server.accept();
 				
-				readFile("Lab_Output",in);
-				
-				in.close();
-				socket.close();
-				
+				if(socket.isInputShutdown()) {
+					
+					Thread t = new Thread(new DataThreadReceiver(socket,"Lab_Output"));
+					t.start();
+					
+				} else {
+					
+					
+					
+				} // If input is enabled, receive file. Otherwise, send file.
+			
 				if(false) {
-					break; // Just makes the IDE happy.
+					break;
 				}
 				
-			} // This is an infinite loop.
+			}
 			
 			server.close();
 			
@@ -41,27 +39,6 @@ public class Data {
 			e.printStackTrace();
 		}
 
-	}
-	
-	public static void readFile(String path, InputStream in) throws FileNotFoundException, IOException {
-		
-		byte[] fileBytes = new byte[in.read()]; // Read the number of bytes in the filename.
-		in.read(fileBytes,0,fileBytes.length); // Read the exact number of bytes.
-		
-		String filename = new String(fileBytes); // Create a String of the filename.
-		
-		BufferedOutputStream bos = new BufferedOutputStream( new FileOutputStream(path+"/"+filename.trim()) );
-		
-		byte[] data = new byte[ 2048 ];
-		
-		int bytesRead = in.read(data, 0, data.length); // Read bytes from the stream.
-		while( bytesRead != -1 ) {
-			bos.write( data, 0, data.length );
-        	bytesRead = in.read(data, 0, data.length);
-        } // While there are more more bytes to read.
-
-        bos.close();
-		
 	}
 	
 }

@@ -32,7 +32,7 @@ public class Data {
 					Thread t2 = new Thread(new DataThreadSender(socket,"Lab_Output"));
 					t2.start();
 					
-				} // If output is enabled, receive file. Otherwise, send file.
+				} // If output & input is enabled, send file to client. Otherwise, accept file from client.
 			
 				if(false) {
 					break;

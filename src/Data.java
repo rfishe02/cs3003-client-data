@@ -20,7 +20,7 @@ public class Data {
 			System.out.println("Data: Waiting for Client...");
 			
 			while(true) {
-		
+				
 				socket = server.accept();
 				in = socket.getInputStream();
 				

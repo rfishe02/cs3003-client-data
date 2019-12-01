@@ -30,18 +30,8 @@ public class Client {
 		
 	}
 	
-	public static int getHashValue(String filename, int length, int i) {
-		
-		int key = Math.abs(filename.hashCode());
-		
-		int h1 = key % length;
-		int h2 = 1 + ( key % (length-1) ); 
-		return (h1 + (i * h2)) % length;
-				
-	}
-	
 	public static ArrayList<String> readConfig(String filename) throws IOException {
-	
+		
 		ArrayList<String> res = new ArrayList<>(15);
 		
 		BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -60,11 +50,46 @@ public class Client {
 		
 	}
 	
+	public static int getHashValue(String filename, int length, int i) {
+		
+		int key = Math.abs(filename.hashCode());
+		
+		int h1 = key % length;
+		int h2 = 1 + ( key % (length-1) );
+		
+		return (h1 + (i * h2)) % length;
+			
+	}
+	
+	public static void processSingleFile(
+		HashMap<String, Integer> fileIndex, 
+		ArrayList<String> nodes, 
+		int port, 
+		File file
+	) throws FileNotFoundException, IOException {
+		
+		Socket socket;
+		OutputStream out;
+		int place;
+		
+		place = getHashValue(file.getName(),nodes.size(),1);
+		fileIndex.put(file.getName(),place);
+	
+		socket = new Socket(nodes.get(place), port);
+		out = socket.getOutputStream();
+		
+		sendFile(file, out);
+		
+		out.close();
+		socket.close();
+		
+	}
+	
 	public static void processDirectoryOfFiles(
-			HashMap<String, Integer> fileIndex, 
-			ArrayList<String> nodes, 
-			int port, 
-			String directory 
+		HashMap<String, Integer> fileIndex, 
+		ArrayList<String> nodes, 
+		int port, 
+		String directory 
 	) throws UnknownHostException, IOException {
 		
 		File[] dir = new File(directory).listFiles();

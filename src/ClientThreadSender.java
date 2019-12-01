@@ -31,7 +31,7 @@ public class ClientThreadSender implements Runnable {
 		
 	}
 	
-	public static void sendFileToNode(File file, Socket socket) throws FileNotFoundException, IOException {
+	public void sendFileToNode(File file, Socket socket) throws FileNotFoundException, IOException {
 		
 		OutputStream out = socket.getOutputStream();
 		

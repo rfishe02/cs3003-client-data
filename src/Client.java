@@ -97,29 +97,11 @@ public class Client {
 		int port,
 		String filename
 	) throws FileNotFoundException, IOException {
-		
+				
 		Socket socket = new Socket(nodes.get(fileIndex.get(filename)), port);
-		
-		OutputStream out = socket.getOutputStream();
-		out.write(filename.getBytes().length); // Write how long the filename is in bytes.
-		out.write(filename.getBytes()); // Write the bytes.
-	
-		InputStream in = socket.getInputStream();
-		StringBuilder sb = new StringBuilder();	
-		byte[] data = new byte[ 2048 ];
-		
-		int bytesRead = in.read(data, 0, data.length); // Read bytes from the stream.
-		while( bytesRead != -1 ) {
-			sb.append(new String(data));
-			bytesRead = in.read(data, 0, data.length);
-        } // While there are more more bytes to read.
-
-        System.out.println(sb.toString());
-        
-        out.close();
-        in.close();
-        socket.close();
-		
+		Thread t = new Thread(new ClientThreadReceiver(socket,filename));
+		t.start();
+				
 	}
 	
 }

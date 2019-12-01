@@ -30,7 +30,7 @@ public class DataThreadReceiver implements Runnable {
 		
 	}
 	
-	public static void receiveFileFromClient(Socket socket, String path) throws FileNotFoundException, IOException {
+	public void receiveFileFromClient(Socket socket, String path) throws FileNotFoundException, IOException {
 		
 		InputStream in = socket.getInputStream();
 		
@@ -56,6 +56,4 @@ public class DataThreadReceiver implements Runnable {
 		
 	}
 	
-	
-
 }

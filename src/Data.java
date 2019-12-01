@@ -13,8 +13,6 @@ public class Data {
 
 	public static void main(String[] args) {
 		
-		
-	
 		try {
 			
 			ServerSocket server = new ServerSocket(32100);
@@ -31,7 +29,8 @@ public class Data {
 					
 				} else {
 					
-					sendFilesToClient(socket,"Lab_Output");
+					Thread t2 = new Thread(new DataThreadSender(socket,"Lab_Output"));
+					t2.start();
 					
 				} // If output is enabled, receive file. Otherwise, send file.
 			
@@ -48,31 +47,6 @@ public class Data {
 		}
 
 	}
-	
-	public static void sendFilesToClient(Socket socket, String path)  throws FileNotFoundException, IOException {
 		
-		InputStream in = socket.getInputStream();
-		byte[] fileBytes = new byte[in.read()]; // Read the number of bytes in the filename.
-		in.read(fileBytes,0,fileBytes.length); // Read the exact number of bytes.
-		String filename = new String(fileBytes); // Create a String of the filename.
-		
-		OutputStream out = socket.getOutputStream();	
-		BufferedInputStream bis = new BufferedInputStream( new FileInputStream( new File(path+"/"+filename) ) );
-		byte[] data = new byte[ 2048 ];
-		
-		int bytesRead = bis.read(data, 0, data.length); // Read bytes from the file.
-		while( bytesRead != -1 ) {
-			out.write(data, 0 , data.length);
-			bytesRead = bis.read(data, 0, data.length);
-		} // While there are more bytes to send.
-
-		bis.close();
-		
-		in.close();
-		out.close();
-		socket.close();
-		
-	}
-	
 }
 

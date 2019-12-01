@@ -3,8 +3,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -18,11 +16,11 @@ public class Client {
 		
 		try {
 			
-			ArrayList<String> nodes = readConfig("config.txt");
+			ArrayList<String> nodes = readConfig("config.txt"); // Load the nodes listed in the config.
 			int port = 32100;
 
-			sendFilesToNodes(fileIndex,nodes,port,"LabFolders/");
-			getFilesFromNodes(fileIndex,nodes,port,"test1.txt");
+			sendFilesToNodes(fileIndex,nodes,port,"LabFolders/"); // Test indexing a directory of file.
+			getFilesFromNodes(fileIndex,nodes,port,"test1.txt"); // Test receiving a single file by name.
 			
 		} catch (IOException e) {
 			e.printStackTrace();

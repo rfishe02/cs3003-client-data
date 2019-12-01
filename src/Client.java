@@ -22,7 +22,7 @@ public class Client {
 			sendFilesToNodes(fileIndex,nodes,port,"LabFolders/"); // Test indexing a directory of file.
 			getFilesFromNodes(fileIndex,nodes,port,"test1.txt"); // Test receiving a single file by name.
 			
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		
@@ -79,7 +79,6 @@ public class Client {
 				fileIndex.put(dir[i].getName(),place);
 			
 				socket = new Socket(nodes.get(place), port);
-				socket.shutdownInput(); // Data will see we've enabled output only.
 				
 				Thread t = new Thread(new ClientThreadSender(socket,dir[i]));
 				t.start();
@@ -94,12 +93,18 @@ public class Client {
 		ArrayList<String> nodes, 
 		int port,
 		String filename
-	) throws FileNotFoundException, IOException {
+	) throws FileNotFoundException, IOException, InterruptedException {
 				
 		Socket socket = new Socket(nodes.get(fileIndex.get(filename)), port);
-		Thread t = new Thread(new ClientThreadReceiver(socket,filename));
+		
+		ClientThreadReceiver c = new ClientThreadReceiver(socket,filename);
+		Thread t = new Thread(c);
+		
 		t.start();
-				
+		t.join(); // Could remove ?
+		
+		System.out.println(c.getOutcome());
+		
 	}
 	
 }

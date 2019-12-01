@@ -22,6 +22,7 @@ public class ClientThreadSender implements Runnable {
 		try {
 			
 			sendFileToNode(file,socket);
+			socket.close();
 			
 		} catch(FileNotFoundException e1 ) {
 			e1.printStackTrace();
@@ -34,6 +35,7 @@ public class ClientThreadSender implements Runnable {
 	public void sendFileToNode(File file, Socket socket) throws FileNotFoundException, IOException {
 		
 		OutputStream out = socket.getOutputStream();
+		out.write(0);
 		
 		BufferedInputStream bis = new BufferedInputStream( new FileInputStream( new File(file.getPath()) ) );
 		
@@ -49,9 +51,7 @@ public class ClientThreadSender implements Runnable {
 		} // While there are more bytes to send.
 
 		bis.close();
-		
 		out.close();
-		socket.close();
 		
 	}
 

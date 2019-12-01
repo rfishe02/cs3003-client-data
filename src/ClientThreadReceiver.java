@@ -8,6 +8,7 @@ public class ClientThreadReceiver implements Runnable {
 
 	private final Socket socket;
 	private final String filename;
+	private String outcome;
 	
 	public ClientThreadReceiver(
 		Socket socket,
@@ -22,7 +23,8 @@ public class ClientThreadReceiver implements Runnable {
 		
 		try {
 			
-			getFileFromNodes(socket,filename);
+			setOutcome(getFileFromNodes(socket,filename));
+			socket.close();
 			
 		} catch(FileNotFoundException e1 ) {
 			e1.printStackTrace();
@@ -32,11 +34,21 @@ public class ClientThreadReceiver implements Runnable {
 		
 	}
 	
-	public void getFileFromNodes(Socket socket, String filename) throws FileNotFoundException, IOException {
+	public String getOutcome() {
+		return outcome;
+	}
+	
+	public void setOutcome(String outcome) {
+		this.outcome = outcome;
+	}
+	
+	public String getFileFromNodes(Socket socket, String filename) throws FileNotFoundException, IOException {
 		
 		// Provide information about the filename to the node.
 		
 		OutputStream out = socket.getOutputStream();
+		out.write(1);
+		
 		out.write(filename.getBytes().length);
 		out.write(filename.getBytes());
 			
@@ -45,18 +57,17 @@ public class ClientThreadReceiver implements Runnable {
 		InputStream in = socket.getInputStream();
 		StringBuilder sb = new StringBuilder();	
 		byte[] data = new byte[ 2048 ];
-				
+		
 		int bytesRead = in.read(data, 0, data.length);
 		while( bytesRead != -1 ) {
 			sb.append(new String(data));
 			bytesRead = in.read(data, 0, data.length);
 		}
-
-		System.out.println(sb.toString());
-		     
+     
 		in.close();
 		out.close();
-		socket.close();
+		
+		return sb.toString();
 		
 	}
 

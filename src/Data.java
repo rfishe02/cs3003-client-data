@@ -16,18 +16,9 @@ public class Data {
 				
 				Socket socket = server.accept();
 				
-				if(socket.isInputShutdown()) {
-					
-					Thread t = new Thread(new DataThreadReceiver(socket,"Lab_Output"));
-					t.start();
-					
-				} else {
-					
-					Thread t2 = new Thread(new DataThreadSender(socket,"Lab_Output"));
-					t2.start();
-					
-				} // If output & input is enabled, send file to client. Otherwise, accept file from client.
-			
+				Thread t = new Thread(new DataThread(socket,"Lab_Output"));
+				t.start();
+				
 				if(false) {
 					break;
 				}
